@@ -18,6 +18,8 @@ class PowerSaveGovernor(Governor):
         print("Starting governor {:s}...".format(self.GOVERNOR_NAME))
         # main loop
         while True:
+            self.read_temps()
+
             self.apply_action()
             time.sleep(self.GOVERNOR_POLL_PERIOD_IN_SECONDS)
 

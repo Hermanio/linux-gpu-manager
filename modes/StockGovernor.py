@@ -33,6 +33,8 @@ class StockGovernor(Governor):
 
         # main loop
         while True:
+            self.read_temps()
+
             # get action
             action = self.decide_action()
 
