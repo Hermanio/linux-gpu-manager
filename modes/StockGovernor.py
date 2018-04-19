@@ -2,24 +2,16 @@ import sys
 import time
 
 from modes.Action import Action
+from modes.Governor import Governor
 
 
-class StockGovernor(object):
+class StockGovernor(Governor):
     """
     Runs the GPU at specified "max" clock speed (stock).
     """
 
-    def __init__(self):
-        self.DEFAULT_MIN_CLOCK = None
-        self.DEFAULT_STOCK_CLOCK = None
-        self.DEFAULT_MAX_CLOCK = None
-
-        self.CURRENT_CLOCK_LIMIT = None
-        self.CURRENT_TEMP = None
-
-        self.GOVERNOR_RUNNING = True
-
-        self.GOVERNOR_NAME = "STOCK_GOVERNOR"
+    def __init__(self, name):
+        super().__init__(name)
 
         self.LOW_TEMP_LIMIT = 70
         self.SAFE_TEMP_LIMIT = 80
@@ -31,22 +23,16 @@ class StockGovernor(object):
 
         self.GOVERNOR_POLL_PERIOD_IN_SECONDS = 1.0
 
-    def run_governor(self):
+    def start(self):
         """
         Starts the governor main loop.
         :return:
         """
+
         print("Starting governor {:s}...".format(self.GOVERNOR_NAME))
 
-        # detection, initial temps
-        self.read_spec_mhz()
-        self.read_temps()
-
         # main loop
-        while self.GOVERNOR_RUNNING:
-            # read temps
-            self.read_temps()
-
+        while True:
             # get action
             action = self.decide_action()
 
@@ -54,33 +40,10 @@ class StockGovernor(object):
             self.apply_action(action)
 
             # print status
-            self.get_status()
+            # self.get_status()
 
             # sleep... I need some, too
             time.sleep(self.GOVERNOR_POLL_PERIOD_IN_SECONDS)
-
-        print("Stopping governor {:s}...".format(self.GOVERNOR_NAME))
-
-    def get_status(self):
-        """
-        Returns the current state (package temp, min med max clocks, current clock)
-        :return:
-        """
-        stats = {
-            "Current freq": "gt_cur_freq_mhz",
-            "Actual freq": "gt_act_freq_mhz",
-            "Maximum freq": "gt_max_freq_mhz",
-            "Minimum freq": "gt_min_freq_mhz",
-            "Boost freq": "gt_boost_freq_mhz",
-            "SPEC max freq": "gt_RP0_freq_mhz",
-            "SPEC normal freq": "gt_RP1_freq_mhz",
-            "SPEC min freq": "gt_RPn_freq_mhz",
-        }
-
-        for stat, path in stats.items():
-            with open("/sys/class/drm/card0/{:s}".format(path)) as f:
-                print("{:s}:\t{:s}".format(stat, f.read()), end='')
-        print()
 
     def apply_action(self, action):
         """
@@ -90,7 +53,6 @@ class StockGovernor(object):
         :param max:
         :return:
         """
-        clock_change = None
         if action == Action.THROTTLE_MODERATE:
             clock_change = -self.SMALL_MHZ_STEPPING
         elif action == Action.THROTTLE_CRITICAL:
@@ -124,18 +86,7 @@ class StockGovernor(object):
                 print("Setting clock level {:s} to {:d}".format(setting, value))
                 f.write(str(value))
 
-    def stop_governor(self):
-        """
-        Stops the governor.
-        :return:
-        """
-        self.GOVERNOR_RUNNING = False
-
-    def decide_action(self, ):
-        """
-        Takes into account current clock, low-normal-high and makes decision
-        :return:
-        """
+    def decide_action(self):
         # test criticals first
         if self.CURRENT_TEMP > self.CRITICAL_TEMP_LIMIT:
             return Action.THROTTLE_CRITICAL
@@ -150,34 +101,3 @@ class StockGovernor(object):
             return Action.BOOST_MODERATE
 
         return Action.NO_OP
-
-    def read_temps(self):
-        """
-        Reads GPU temp (if not available, read package temp/CPU temp).
-        If over limit, throttle clock.
-        :return:
-        """
-        # todo enumerate paths, collect all temps, then get max
-        TEMP_PATH = "/sys/class/thermal/thermal_zone1/temp"
-
-        # todo handle IO error
-        with open(TEMP_PATH, "r") as f:
-            self.CURRENT_TEMP = int(f.read()) / 1000
-
-    def read_spec_mhz(self):
-        paths = {
-            "boost": "gt_RP0_freq_mhz",
-            "max": "gt_RP1_freq_mhz",
-            "min": "gt_RPn_freq_mhz",
-        }
-        for level, path in paths.items():
-            with open("/sys/class/drm/card0/{:s}".format(path)) as f:
-                clockspeed = int(f.read())
-                if level == "min":
-                    self.DEFAULT_MIN_CLOCK = clockspeed
-                elif level == "max":
-                    self.DEFAULT_STOCK_CLOCK = clockspeed
-                elif level == "boost":
-                    self.DEFAULT_MAX_CLOCK = clockspeed
-
-        self.CURRENT_CLOCK_LIMIT = self.DEFAULT_MIN_CLOCK

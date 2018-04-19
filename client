@@ -25,7 +25,7 @@ if __name__ == "__main__":
                         type=str, nargs='?', default='normal')
     args = parser.parse_args()
     if args.mode in CONTROLLER_MODES:
-        gpu_manager.setMode(args.mode)
+        gpu_manager.set_mode(args.mode)
     else:
         # print("Invalid argument ", args.action)
         parser.error("Invalid argument " + str(args.action))

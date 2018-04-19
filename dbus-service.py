@@ -12,6 +12,7 @@
 # if max temp is reached, employ thermal daemon style throttle
 import dbus, dbus.service, dbus.exceptions
 import sys
+from controller import GPUManager
 
 from dbus.mainloop.glib import DBusGMainLoop
 from gi.repository import GLib
@@ -31,11 +32,7 @@ except dbus.exceptions.NameExistsException:
 
 # Run the loop
 try:
-    # Create our initial objects
-    from controller import GPUController
-
-    GPUController(bus_name)
-
+    GPUManager(bus_name)
     loop.run()
 except KeyboardInterrupt:
     print("keyboard interrupt received")
