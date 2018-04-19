@@ -1,21 +1,11 @@
 #!/usr/bin/env python3
-#implementation plan
-# read sensor data (if not available, use coretemp as indicator)
-
-#API
-
-#set-mode :
-# powersave always at lowest clocks
-# normal non-OC perf
-# max performance max-OC perf
-
-# if max temp is reached, employ thermal daemon style throttle
-import dbus, dbus.service, dbus.exceptions
 import sys
-from controller import GPUManager
 
+import dbus, dbus.service, dbus.exceptions
 from dbus.mainloop.glib import DBusGMainLoop
 from gi.repository import GLib
+
+from controller import GPUManager
 
 # Initialize a main loop
 DBusGMainLoop(set_as_default=True)

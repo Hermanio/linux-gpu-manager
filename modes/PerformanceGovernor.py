@@ -4,14 +4,14 @@ from modes.Action import Action
 from modes.Governor import Governor
 
 
-class StockGovernor(Governor):
+class PerformanceGovernor(Governor):
     """
-    Runs the GPU at specified "max" clock speed (stock).
+    Runs the GPU at specified "boost" clock speed if requested.
     """
 
     def __init__(self):
         super().__init__()
-        self.GOVERNOR_NAME = "STOCK_GOVERNOR"
+        self.GOVERNOR_NAME = 'PERFORMANCE_GOVERNOR'
 
         self.LOW_TEMP_LIMIT = 70
         self.SAFE_TEMP_LIMIT = 80
@@ -21,7 +21,7 @@ class StockGovernor(Governor):
         self.SMALL_MHZ_STEPPING = 50
         self.BIG_MHZ_STEPPING = 200
 
-        self.GOVERNOR_POLL_PERIOD_IN_SECONDS = 1.0
+        self.GOVERNOR_POLL_PERIOD_IN_SECONDS = 0.5
 
     def start(self):
         """
@@ -71,8 +71,8 @@ class StockGovernor(Governor):
         if self.CURRENT_CLOCK_LIMIT < self.DEFAULT_MIN_CLOCK:
             self.CURRENT_CLOCK_LIMIT = self.DEFAULT_MIN_CLOCK
 
-        if self.CURRENT_CLOCK_LIMIT > self.DEFAULT_STOCK_CLOCK:
-            self.CURRENT_CLOCK_LIMIT = self.DEFAULT_STOCK_CLOCK
+        if self.CURRENT_CLOCK_LIMIT > self.DEFAULT_MAX_CLOCK:
+            self.CURRENT_CLOCK_LIMIT = self.DEFAULT_MAX_CLOCK
 
         # min, max, boost
         settings = {

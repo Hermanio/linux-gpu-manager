@@ -5,7 +5,7 @@ from abc import ABCMeta, abstractmethod
 class Governor(object):
     __metaclass__ = ABCMeta
 
-    def __init__(self, name):
+    def __init__(self):
         """
         Init shared components.
         Other governors may want to use multiple temperature levels or different MHz steppings
@@ -20,8 +20,6 @@ class Governor(object):
 
         self.CURRENT_CLOCK_LIMIT = None
         self.CURRENT_TEMP = None
-
-        self.GOVERNOR_NAME = name
 
         self.GOVERNOR_THREAD = None
 

@@ -1,7 +1,5 @@
-import sys
 import time
 
-from modes.Action import Action
 from modes.Governor import Governor
 
 
@@ -10,8 +8,10 @@ class PowerSaveGovernor(Governor):
     Runs the GPU at specified min clock speed at all times.
     """
 
-    def __init__(self, name):
-        super().__init__(name)
+    def __init__(self, ):
+        super().__init__()
+        self.GOVERNOR_NAME = "POWERSAVE_GOVERNOR"
+
         self.GOVERNOR_POLL_PERIOD_IN_SECONDS = 5.0
 
     def start(self):

@@ -1,11 +1,6 @@
-import getpass
-import multiprocessing
-import re
-import threading
-
 import dbus.service
 
-from modes import StockGovernor, PowerSaveGovernor
+from modes import StockGovernor, PowerSaveGovernor, PerformanceGovernor
 
 
 class GPUManager(dbus.service.Object):
@@ -41,8 +36,9 @@ class GPUManager(dbus.service.Object):
 
     def get_governor_by_name(self, name):
         governors = {
-            'normal': StockGovernor('STOCK_GOVERNOR'),
-            'powersave': PowerSaveGovernor('POWERSAVE_GOVERNOR')
+            'normal': StockGovernor(),
+            'powersave': PowerSaveGovernor(),
+            'performance': PerformanceGovernor()
         }
 
         return governors[name]

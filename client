@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-import sys
-import dbus, dbus.exceptions
 import argparse
+import sys
+import dbus.exceptions
 
 
 class MyParser(argparse.ArgumentParser):
@@ -9,6 +9,7 @@ class MyParser(argparse.ArgumentParser):
         sys.stderr.write('error: %s\n' % message)
         self.print_help()
         sys.exit(2)
+
 
 if __name__ == "__main__":
     CONTROLLER_MODES = ['powersave', 'normal', 'performance']
@@ -21,7 +22,8 @@ if __name__ == "__main__":
         sys.exit(2)
 
     parser = MyParser(argparse.ArgumentParser())
-    parser.add_argument("mode", help="Starts the GPU Manager Service in a given mode. Available modes: powersave, normal, performance",
+    parser.add_argument("mode",
+                        help="Starts the GPU Manager Service in a given mode. Available modes: powersave, normal, performance",
                         type=str, nargs='?', default='normal')
     args = parser.parse_args()
     if args.mode in CONTROLLER_MODES:
