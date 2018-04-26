@@ -11,17 +11,17 @@ class StockGovernor(Governor):
 
     def __init__(self):
         super().__init__()
-        self.GOVERNOR_NAME = "STOCK_GOVERNOR"
+        self.governor_name = "STOCK_GOVERNOR"
 
-        self.LOW_TEMP_LIMIT = 70
-        self.SAFE_TEMP_LIMIT = 80
-        self.CRITICAL_TEMP_LIMIT = 90
+        self.low_temp_limit = 70
+        self.safe_temp_limit = 80
+        self.critical_temp_limit = 90
 
         # Intel HD4000 has 50MHZ steppings, setting them will automatically
-        self.SMALL_MHZ_STEPPING = 50
-        self.BIG_MHZ_STEPPING = 200
+        self.small_mhz_stepping = 50
+        self.big_mhz_stepping = 200
 
-        self.GOVERNOR_POLL_PERIOD_IN_SECONDS = 1.0
+        self.governor_poll_period_in_seconds = 1.0
 
     def start(self):
         """
@@ -29,7 +29,7 @@ class StockGovernor(Governor):
         :return:
         """
 
-        print("Starting governor {:s}...".format(self.GOVERNOR_NAME))
+        print("Starting governor {:s}...".format(self.governor_name))
 
         # main loop
         while True:
@@ -45,7 +45,7 @@ class StockGovernor(Governor):
             # self.get_status()
 
             # sleep... I need some, too
-            time.sleep(self.GOVERNOR_POLL_PERIOD_IN_SECONDS)
+            time.sleep(self.governor_poll_period_in_seconds)
 
     def apply_action(self, action):
         """
@@ -56,31 +56,31 @@ class StockGovernor(Governor):
         :return:
         """
         if action == Action.THROTTLE_MODERATE:
-            clock_change = -self.SMALL_MHZ_STEPPING
+            clock_change = -self.small_mhz_stepping
         elif action == Action.THROTTLE_CRITICAL:
-            clock_change = -self.BIG_MHZ_STEPPING
+            clock_change = -self.big_mhz_stepping
         elif action == Action.BOOST_MODERATE:
-            clock_change = self.SMALL_MHZ_STEPPING
+            clock_change = self.small_mhz_stepping
         elif action == Action.BOOST_CRITICAL:
-            clock_change = self.BIG_MHZ_STEPPING
+            clock_change = self.big_mhz_stepping
         elif action == Action.NO_OP:
             clock_change = 0
         else:
             clock_change = 0
 
-        self.CURRENT_CLOCK_LIMIT = self.CURRENT_CLOCK_LIMIT + clock_change
+        self.current_clock_limit = self.current_clock_limit + clock_change
 
-        if self.CURRENT_CLOCK_LIMIT < self.DEFAULT_MIN_CLOCK:
-            self.CURRENT_CLOCK_LIMIT = self.DEFAULT_MIN_CLOCK
+        if self.current_clock_limit < self.default_min_clock:
+            self.current_clock_limit = self.default_min_clock
 
-        if self.CURRENT_CLOCK_LIMIT > self.DEFAULT_STOCK_CLOCK:
-            self.CURRENT_CLOCK_LIMIT = self.DEFAULT_STOCK_CLOCK
+        if self.current_clock_limit > self.default_stock_clock:
+            self.current_clock_limit = self.default_stock_clock
 
         # min, max, boost
         settings = {
-            "min": self.DEFAULT_MIN_CLOCK,
-            "max": self.CURRENT_CLOCK_LIMIT,
-            "boost": self.CURRENT_CLOCK_LIMIT
+            "min": self.default_min_clock,
+            "max": self.current_clock_limit,
+            "boost": self.current_clock_limit
         }
 
         for setting, value in settings.items():
@@ -90,16 +90,16 @@ class StockGovernor(Governor):
 
     def decide_action(self):
         # test criticals first
-        if self.CURRENT_TEMP > self.CRITICAL_TEMP_LIMIT:
+        if self.current_temperature > self.critical_temp_limit:
             return Action.THROTTLE_CRITICAL
 
-        if self.CURRENT_TEMP > self.SAFE_TEMP_LIMIT:
+        if self.current_temperature > self.safe_temp_limit:
             return Action.THROTTLE_MODERATE
 
-        if self.CURRENT_TEMP < self.LOW_TEMP_LIMIT:
+        if self.current_temperature < self.low_temp_limit:
             return Action.BOOST_CRITICAL
 
-        if self.CURRENT_TEMP < self.SAFE_TEMP_LIMIT:
+        if self.current_temperature < self.safe_temp_limit:
             return Action.BOOST_MODERATE
 
         return Action.NO_OP

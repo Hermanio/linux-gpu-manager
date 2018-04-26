@@ -8,16 +8,16 @@ class GPUManager(dbus.service.Object):
     def __init__(self, bus_name):
         super().__init__(bus_name, "/ee/ounapuu/GPUManager")
 
-        self.CURRENT_GOVERNOR = None
-        self.CURRENT_GOVERNOR_NAME = None
-        self.CONTROLLER_MODES = ['powersave', 'normal', 'performance']
+        self.current_governor = None
+        self.current_governor_name = None
+        self.controller_modes = ['powersave', 'normal', 'performance']
 
         self.start_governor('normal')
 
     @dbus.service.method("ee.ounapuu.GPUManager.setMode", in_signature='s', out_signature='s')
     def set_mode(self, mode):
-        if mode in self.CONTROLLER_MODES:
-            if mode == self.CURRENT_GOVERNOR_NAME:
+        if mode in self.controller_modes:
+            if mode == self.current_governor_name:
                 return "Mode already set to {:s}!".format(mode)
             else:
                 self.stop_governor()
@@ -27,12 +27,12 @@ class GPUManager(dbus.service.Object):
             return "Invalid mode '{:s}'.".format(mode)
 
     def start_governor(self, mode):
-        self.CURRENT_GOVERNOR = self.get_governor_by_name(mode)
-        self.CURRENT_GOVERNOR_NAME = mode
-        self.CURRENT_GOVERNOR.run_governor()
+        self.current_governor = self.get_governor_by_name(mode)
+        self.current_governor_name = mode
+        self.current_governor.run_governor()
 
     def stop_governor(self):
-        self.CURRENT_GOVERNOR.stop_governor()
+        self.current_governor.stop_governor()
 
     def get_governor_by_name(self, name):
         governors = {

@@ -14,14 +14,15 @@ class Governor(object):
         First time run stuff can also be initialised in run_governor method.
         :param name:
         """
-        self.DEFAULT_MIN_CLOCK = None
-        self.DEFAULT_STOCK_CLOCK = None
-        self.DEFAULT_MAX_CLOCK = None
+        self.governor_name = None
+        self.default_min_clock = None
+        self.default_stock_clock = None
+        self.default_max_clock = None
 
-        self.CURRENT_CLOCK_LIMIT = None
-        self.CURRENT_TEMP = None
+        self.current_clock_limit = None
+        self.current_temperature = None
 
-        self.GOVERNOR_THREAD = None
+        self.governor_thread = None
 
         self.read_spec_mhz()
         self.read_temps()
@@ -76,17 +77,17 @@ class Governor(object):
         """
         Starts the governor process.
         """
-        self.GOVERNOR_THREAD = multiprocessing.Process(target=self.start)
-        self.GOVERNOR_THREAD.start()
+        self.governor_thread = multiprocessing.Process(target=self.start)
+        self.governor_thread.start()
 
     def stop_governor(self):
         """
         Stops the governor main loop from running.
         :return:
         """
-        print("Stopping governor {:s}...".format(self.GOVERNOR_NAME))
-        self.GOVERNOR_THREAD.terminate()
-        self.GOVERNOR_THREAD = None
+        print("Stopping governor {:s}...".format(self.governor_name))
+        self.governor_thread.terminate()
+        self.governor_thread = None
 
     def read_temps(self):
         """
@@ -95,11 +96,11 @@ class Governor(object):
         :return:
         """
         # todo enumerate paths, collect all temps, then get max
-        TEMP_PATH = "/sys/class/thermal/thermal_zone1/temp"
+        temp_path = "/sys/class/thermal/thermal_zone1/temp"
 
         # todo handle IO error
-        with open(TEMP_PATH, "r") as f:
-            self.CURRENT_TEMP = int(f.read()) / 1000
+        with open(temp_path, "r") as f:
+            self.current_temperature = int(f.read()) / 1000
 
     def read_spec_mhz(self):
         paths = {
@@ -111,10 +112,10 @@ class Governor(object):
             with open("/sys/class/drm/card0/{:s}".format(path)) as f:
                 clockspeed = int(f.read())
                 if level == "min":
-                    self.DEFAULT_MIN_CLOCK = clockspeed
+                    self.default_min_clock = clockspeed
                 elif level == "max":
-                    self.DEFAULT_STOCK_CLOCK = clockspeed
+                    self.default_stock_clock = clockspeed
                 elif level == "boost":
-                    self.DEFAULT_MAX_CLOCK = clockspeed
+                    self.default_max_clock = clockspeed
 
-        self.CURRENT_CLOCK_LIMIT = self.DEFAULT_MIN_CLOCK
+        self.current_clock_limit = self.default_min_clock

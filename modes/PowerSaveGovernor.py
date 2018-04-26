@@ -10,25 +10,25 @@ class PowerSaveGovernor(Governor):
 
     def __init__(self, ):
         super().__init__()
-        self.GOVERNOR_NAME = "POWERSAVE_GOVERNOR"
+        self.governor_name = "POWERSAVE_GOVERNOR"
 
-        self.GOVERNOR_POLL_PERIOD_IN_SECONDS = 5.0
+        self.governor_poll_period_in_seconds = 5.0
 
     def start(self):
-        print("Starting governor {:s}...".format(self.GOVERNOR_NAME))
+        print("Starting governor {:s}...".format(self.governor_name))
         # main loop
         while True:
             self.read_temps()
 
             self.apply_action()
-            time.sleep(self.GOVERNOR_POLL_PERIOD_IN_SECONDS)
+            time.sleep(self.governor_poll_period_in_seconds)
 
     def apply_action(self, action=None):
         # min, max, boost
         settings = {
-            "min": self.DEFAULT_MIN_CLOCK,
-            "max": self.DEFAULT_MIN_CLOCK,
-            "boost": self.DEFAULT_MIN_CLOCK
+            "min": self.default_min_clock,
+            "max": self.default_min_clock,
+            "boost": self.default_min_clock
         }
 
         for setting, value in settings.items():
