@@ -1,7 +1,6 @@
 #!/bin/bash
 
-sudo python3 ../dbus-service.py &
-
+#sudo python3 ../dbus-service.py &
 
 #powersave
 echo "powersave mode test"
