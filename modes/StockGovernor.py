@@ -14,8 +14,8 @@ class StockGovernor(Governor):
         self.governor_name = "STOCK_GOVERNOR"
 
         self.low_temp_limit = 70
-        self.safe_temp_limit = 80
-        self.critical_temp_limit = 90
+        self.safe_temp_limit = 90
+        self.critical_temp_limit = 95
 
         # Intel HD4000 has 50MHZ steppings, setting them will automatically
         self.small_mhz_stepping = 50
