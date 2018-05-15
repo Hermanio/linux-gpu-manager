@@ -1,17 +1,35 @@
+# Copyright (C) 2018 Herman Õunapuu
+#
+# This file is part of Linux GPU Manager.
+#
+# Linux GPU Manager is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# Linux GPU Manager is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with Linux GPU Manager.  If not, see <http://www.gnu.org/licenses/>.
+
+
 import time
 
 from modes.Action import Action
 from modes.Governor import Governor
 
 
-class PerformanceGovernor(Governor):
+class StockGovernor(Governor):
     """
-    Runs the GPU at specified "boost" clock speed if requested.
+    Runs the GPU at specified "max" clock speed (stock).
     """
 
     def __init__(self):
         super().__init__()
-        self.governor_name = 'PERFORMANCE_GOVERNOR'
+        self.governor_name = "STOCK_GOVERNOR"
 
         self.low_temp_limit = 70
         self.safe_temp_limit = 90
@@ -21,7 +39,7 @@ class PerformanceGovernor(Governor):
         self.small_mhz_stepping = 50
         self.big_mhz_stepping = 200
 
-        self.governor_poll_period_in_seconds = 0.5
+        self.governor_poll_period_in_seconds = 1.0
 
     def start(self):
         """
@@ -73,8 +91,8 @@ class PerformanceGovernor(Governor):
         if self.current_clock_limit < self.default_min_clock:
             self.current_clock_limit = self.default_min_clock
 
-        if self.current_clock_limit > self.default_max_clock:
-            self.current_clock_limit = self.default_max_clock
+        if self.current_clock_limit > self.default_stock_clock:
+            self.current_clock_limit = self.default_stock_clock
 
         # min, max, boost
         settings = {
