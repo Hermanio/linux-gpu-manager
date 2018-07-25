@@ -1,0 +1,9 @@
+[Unit]
+Description = Linux GPU Manager service daemon
+
+[Service]
+ExecStart   = /usr/bin/linux-gpu-manager/service
+Restart     = always
+
+[Install]
+WantedBy = multi-user.target

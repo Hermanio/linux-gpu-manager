@@ -32,7 +32,7 @@ class GPUManager(dbus.service.Object):
         self.current_governor_name = None
         self.controller_modes = ['powersave', 'normal', 'performance']
 
-        self.start_governor('normal')
+        self.start_governor('performance')
 
     @dbus.service.method("ee.ounapuu.GPUManager.setMode", in_signature='s', out_signature='s')
     def set_mode(self, mode):
